@@ -1,18 +1,32 @@
-package main
+package acceptLanguage
 
 import (
-  "fmt"
-  //"context"
+  // "fmt"
+  "context"
   "sort"
   "strings"
   "strconv"
   // "net/http"
-  "golang.org/x/text/language"
+  // "golang.org/x/text/language"
 
 )
 
+type languageKey struct{}
+func WithContext(ctx context.Context, languages AcceptLanguages) context.Context {
+  if len(languages) == 0 {
+    return ctx
+  }
+  return context.WithValue(ctx, languageKey{}, &languages)
+}
 
-type acceptLanguageKey struct{}
+func Get(ctx context.Context) *AcceptLanguages{
+  v := ctx.Value(languageKey{})
+  if v == nil {
+    return nil
+  }
+
+  return v.(*AcceptLanguages)
+}
 
 type AcceptLanguage struct {
   Lang string
@@ -80,10 +94,10 @@ func parseQFactorString(raw string) float32 {
 // }
 
 
-func main() {
-  languages := ParseLanguagesList("ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7")
-  fmt.Printf("%+v\n", languages)
-  for _, l := range languages {
-    fmt.Println(language.Parse(l.Lang))
-  }
-}
+// func main() {
+//   languages := ParseLanguagesList("ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7")
+//   fmt.Printf("%+v\n", languages)
+//   for _, l := range languages {
+//     fmt.Println(language.Parse(l.Lang))
+//   }
+// }
